@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS users (
   password VARCHAR(500) NOT NULL,
   passport_number VARCHAR(50),
   contact_number VARCHAR(30),
-  role ENUM('PASSENGER','ADMIN') NOT NULL DEFAULT 'PASSENGER'
+  role ENUM('PASSENGER','ADMIN') NOT NULL DEFAULT 'PASSENGER',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
 -- Flights table
@@ -27,7 +28,9 @@ CREATE TABLE IF NOT EXISTS flights (
   seat_capacity INT DEFAULT 100,
   available_seats INT DEFAULT 100,
   price DECIMAL(10,2) DEFAULT 0.00,
-  status VARCHAR(20) DEFAULT 'SCHEDULED'
+  status VARCHAR(20) DEFAULT 'SCHEDULED',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
 -- Bookings table
@@ -37,7 +40,14 @@ CREATE TABLE IF NOT EXISTS bookings (
   flight_id INT NOT NULL,
   booking_date DATETIME DEFAULT CURRENT_TIMESTAMP,
   status VARCHAR(20) DEFAULT 'CONFIRMED',
+  food_preference VARCHAR(50) DEFAULT NULL,
+  seat_preference ENUM('WINDOW','AISLE','MIDDLE') DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
   FOREIGN KEY (flight_id) REFERENCES flights(flight_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_flights_route ON flights(source, destination);
+CREATE INDEX idx_bookings_user ON bookings(user_id);
+CREATE INDEX idx_bookings_flight ON bookings(flight_id);

@@ -89,9 +89,16 @@ public class Passenger extends User {
         service.viewFlights();
     }
 
+    // Book flight without preferences (backwards compatible)
     public boolean bookFlight(int flightId) {
         BookingService service = new BookingService();
-        return service.createBooking(this.userId, flightId);
+        return service.createBooking(this.userId, flightId, null, null);
+    }
+
+    // New: Book flight with food and seat preferences
+    public boolean bookFlight(int flightId, String foodPreference, String seatPreference) {
+        BookingService service = new BookingService();
+        return service.createBooking(this.userId, flightId, foodPreference, seatPreference);
     }
 
     public boolean cancelBooking(int bookingId) {

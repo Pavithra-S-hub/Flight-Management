@@ -14,6 +14,41 @@ public class Admin extends User {
         super(userId, name, email, passportNumber, contactNumber, "ADMIN");
     }
 
+    // Create an admin with default password 'admin' (hashed) — idempotent if email exists
+    public static boolean createAdmin(String name, String email) {
+        String checkSql = "SELECT COUNT(*) AS cnt FROM users WHERE email = ?";
+        String insertSql = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, 'ADMIN')";
+        Connection con = DatabaseConnection.getConnection();
+        if (con == null) {
+            System.out.println(ConsoleColors.RED + "❌ Cannot create admin: no DB connection" + ConsoleColors.RESET);
+            return false;
+        }
+        try (PreparedStatement ch = con.prepareStatement(checkSql)) {
+            ch.setString(1, email);
+            try (ResultSet rs = ch.executeQuery()) {
+                if (rs.next() && rs.getInt("cnt") > 0) {
+                    System.out.println(ConsoleColors.YELLOW + "⚠️ A user with that email already exists: " + email + ConsoleColors.RESET);
+                    return false;
+                }
+            }
+
+            String hashed = PasswordUtil.hashPassword("admin");
+            try (PreparedStatement ins = con.prepareStatement(insertSql)) {
+                ins.setString(1, name);
+                ins.setString(2, email);
+                ins.setString(3, hashed);
+                ins.executeUpdate();
+                System.out.println(ConsoleColors.GREEN + "✅ Admin created: " + email + " (initial password: admin). Please change it after first login." + ConsoleColors.RESET);
+                return true;
+            }
+        } catch (Exception e) {
+            System.out.println(ConsoleColors.RED + "❌ Failed to create admin: " + e.getMessage() + ConsoleColors.RESET);
+            return false;
+        } finally {
+            DatabaseConnection.closeQuietly(con);
+        }
+    }
+
     // Attempt to authenticate an admin; returns Admin instance or null
     public static Admin login(String email, String password) {
         String sql = "SELECT user_id, name, email, password, passport_number, contact_number FROM users WHERE email = ? AND role = 'ADMIN'";

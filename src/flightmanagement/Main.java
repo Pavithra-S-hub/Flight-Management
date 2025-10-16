@@ -15,6 +15,7 @@ public class Main {
             System.out.println("\n1️⃣  Login");
             System.out.println("2️⃣  Register");
             System.out.println("3️⃣  Exit");
+            System.out.println("4️⃣  Create Admin (requires master password)");
             System.out.print(ConsoleColors.CYAN + "Enter choice: " + ConsoleColors.RESET);
             String choice = sc.nextLine().trim();
             switch (choice) {
@@ -56,6 +57,18 @@ public class Main {
                     System.out.println(ConsoleColors.YELLOW + "👋 Exiting system. Goodbye!" + ConsoleColors.RESET);
                     break outer;
 
+                case "4":
+                    System.out.print(ConsoleColors.CYAN + "Enter master password to create admin: " + ConsoleColors.RESET);
+                    String master = sc.nextLine().trim();
+                    if ("admin".equals(master)) {
+                        System.out.print("Admin Name: "); String aname = sc.nextLine().trim();
+                        System.out.print("Admin Email: "); String aemail = sc.nextLine().trim();
+                        Admin.createAdmin(aname, aemail);
+                    } else {
+                        System.out.println(ConsoleColors.RED + "❌ Incorrect master password." + ConsoleColors.RESET);
+                    }
+                    break;
+
                 default:
                     System.out.println(ConsoleColors.RED + "❌ Invalid choice!" + ConsoleColors.RESET);
             }
@@ -85,7 +98,30 @@ public class Main {
                     String fidStr = sc.nextLine().trim();
                     try {
                         int fid = Integer.parseInt(fidStr);
-                        p.bookFlight(fid);
+                        // Collect food preference
+                        System.out.println("Food preferences: 1) Vegetarian 2) Non-Veg 3) Vegan 4) No preference");
+                        System.out.print("Choose (1-4): ");
+                        String foodChoice = sc.nextLine().trim();
+                        String foodPref = null;
+                        switch (foodChoice) {
+                            case "1": foodPref = "Vegetarian"; break;
+                            case "2": foodPref = "Non-Veg"; break;
+                            case "3": foodPref = "Vegan"; break;
+                            default: foodPref = null; break;
+                        }
+                        // Collect seat preference
+                        System.out.println("Seat preferences: 1) Window 2) Aisle 3) Middle 4) No preference");
+                        System.out.print("Choose (1-4): ");
+                        String seatChoice = sc.nextLine().trim();
+                        String seatPref = null;
+                        switch (seatChoice) {
+                            case "1": seatPref = "WINDOW"; break;
+                            case "2": seatPref = "AISLE"; break;
+                            case "3": seatPref = "MIDDLE"; break;
+                            default: seatPref = null; break;
+                        }
+
+                        p.bookFlight(fid, foodPref, seatPref);
                     } catch (NumberFormatException e) {
                         System.out.println(ConsoleColors.RED + "❌ Invalid flight id." + ConsoleColors.RESET);
                     }
