@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/main/resources/sql/remove_mock_data.sql">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/main/resources/sql/remove_mock_data.sql" />
+              <option name="updatedContent" value="-- remove_mock_data.sql&#10;-- Removes mock/sample data inserted for quick testing.&#10;-- Safe to run multiple times (idempotent).&#10;&#10;USE flight_management;&#10;&#10;-- 1) Remove bookings linked to sample passengers or sample flights&#10;DELETE b&#10;FROM bookings b&#10;LEFT JOIN users u ON b.user_id = u.user_id&#10;LEFT JOIN flights f ON b.flight_id = f.flight_id&#10;WHERE u.email IN ('alice@example.com')&#10;   OR f.flight_number IN ('FM100', 'FM200');&#10;&#10;-- 2) Remove sample flights&#10;DELETE FROM flights WHERE flight_number IN ('FM100', 'FM200');&#10;&#10;-- 3) Remove sample users (passenger and convenience admin)&#10;DELETE FROM users WHERE email IN ('alice@example.com', 'admin@flightmanagement.com');&#10;&#10;-- 4) Optionally reset AUTO_INCREMENT values to keep IDs compact (uncomment if desired)&#10;-- ALTER TABLE bookings AUTO_INCREMENT = 1;&#10;-- ALTER TABLE flights AUTO_INCREMENT = 1;&#10;-- ALTER TABLE users AUTO_INCREMENT = 1;&#10;&#10;-- 5) Show remaining counts for quick verification&#10;SELECT 'users' AS table_name, COUNT(*) AS rows FROM users;&#10;SELECT 'flights' AS table_name, COUNT(*) AS rows FROM flights;&#10;SELECT 'bookings' AS table_name, COUNT(*) AS rows FROM bookings;&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
